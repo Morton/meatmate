@@ -6,9 +6,14 @@ const TimeToTarget = ({ currentTemperature, temperatureHistory, targetTemperatur
   const timeToTarget = useTimeToTarget(temperatureHistory, targetTemperature);
 
   const progress = useMemo(() => {
-    if (!currentTemperature || targetTemperature <= 50) return 0;
-    return Math.min((currentTemperature / targetTemperature) * 100, 100);
-  }, [currentTemperature, targetTemperature]);
+    if (!currentTemperature || targetTemperature <= 50 || !temperatureHistory || temperatureHistory.length === 0) return 0;
+
+    const minTemperature = Math.min(...temperatureHistory.map(entry => entry.value));
+    const adjustedTemperature = currentTemperature - minTemperature;
+    const adjustedTarget = targetTemperature - minTemperature;
+
+    return Math.min((adjustedTemperature / adjustedTarget) * 100, 100);
+  }, [currentTemperature, targetTemperature, temperatureHistory]);
 
   // Convert seconds to a readable time format
   const formatTime = (seconds) => {
@@ -18,7 +23,9 @@ const TimeToTarget = ({ currentTemperature, temperatureHistory, targetTemperatur
     const mins = Math.floor((seconds % 3600) / 60);
     const secs = Math.floor(seconds % 60);
 
-    return `${hrs > 0 ? hrs + "h " : ""}${mins > 0 ? mins + "m " : ""}${secs}s`;
+    if (hrs > 0) return `${hrs}h ${mins}m`;
+    else if (mins > 0) return `${mins}m ${secs}s`;
+    else return `${secs}s`;
   };
 
   const targetClockTime = useMemo(() => {
@@ -59,10 +66,10 @@ const TimeToTarget = ({ currentTemperature, temperatureHistory, targetTemperatur
       </Box>
       {timeToTarget !== null && !isNaN(timeToTarget) && timeToTarget > 0 && (
         <Typography
-          variant="body2"
+          variant="body1"
           sx={{ color: "#ffffff", textAlign: "center", marginTop: 2 }}
         >
-          <strong>Target Time:</strong> {targetClockTime}
+          {targetClockTime}
         </Typography>
       )}
     </Box>

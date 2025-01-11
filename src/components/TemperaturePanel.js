@@ -21,16 +21,13 @@ const TemperaturePanel = ({ probeNumber }) => {
         padding: 2,
         borderRadius: 2,
         boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.7)",
-        marginTop: 2,
+        margin: 2,
         textAlign: "center",
+        display: "flex",
+        flexDirection: "row",
+        gap: 6,
       }}
     >
-      <Typography variant="h6" sx={{ marginBottom: 1, color: "#ffab40" }}>
-        Probe {probeNumber + 1}
-      </Typography>
-      <Typography variant="body1" sx={{ color: "#ffffff" }}>
-        <strong>Temperature:</strong> {temperature ? `${temperature.toFixed(2)} °C` : "Waiting for reading..."}
-      </Typography>
       <Box
         sx={{
           marginTop: 2,
@@ -39,6 +36,9 @@ const TemperaturePanel = ({ probeNumber }) => {
           flexDirection: "column",
         }}
       >
+        <Typography variant="h6" sx={{ marginBottom: 1, color: "#ffab40" }}>
+        {temperature ? `${temperature.toFixed(1)} °C` : "Waiting for reading..."}
+        </Typography>
         <Slider
           orientation="vertical"
           value={targetTemperature}
@@ -52,7 +52,7 @@ const TemperaturePanel = ({ probeNumber }) => {
             color: "#ffab40",
           }}
         />
-        <Typography variant="body2" sx={{ color: "#ffffff", marginTop: 1 }}>
+        <Typography variant="body1" sx={{ color: "#ffffff", marginTop: 1 }}>
           {targetTemperature} °C
         </Typography>
       </Box>

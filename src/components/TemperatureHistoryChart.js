@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -26,20 +26,20 @@ const TemperatureHistoryChart = () => {
     ) || [],
     datasets: [
       {
-        label: "Probe 1 Temperature (°C)",
+        label: "Probe 1 (°C)",
         data: temperatureHistories[0]?.map((entry) => entry.value) || [],
         borderColor: "#ffab40",
-        backgroundColor: "rgba(255, 171, 64, 0.2)",
         borderWidth: 2,
         tension: 0.3,
+        pointRadius: 0
       },
       {
-        label: "Probe 2 Temperature (°C)",
+        label: "Probe 2 (°C)",
         data: temperatureHistories[1]?.map((entry) => entry.value) || [],
-        borderColor: "#4caf50",
-        backgroundColor: "rgba(76, 175, 80, 0.2)",
+        borderColor: "#ff4040",
         borderWidth: 2,
-        tension: 0.3,
+        tension: 0,
+        pointRadius: 0
       },
     ],
   };
@@ -50,48 +50,38 @@ const TemperatureHistoryChart = () => {
     scales: {
       x: {
         title: {
-          display: true,
-          text: "Time",
-          color: "#ffffff",
+          display: false
         },
         ticks: {
-          color: "#ffffff",
-        },
+          display: false
+        }
       },
       y: {
         title: {
-          display: true,
-          text: "Temperature (°C)",
-          color: "#ffffff",
+          display: false
         },
         ticks: {
-          color: "#ffffff",
-        },
-      },
+          display: false
+        }
+      }
     },
     plugins: {
       legend: {
-        labels: {
-          color: "#ffffff",
-        },
-      },
-    },
+        display: false
+      }
+    }
   };
 
   return (
     <Box
       sx={{
-        backgroundColor: "#1e1e1e",
         padding: 2,
-        borderRadius: 2,
-        boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.7)",
         marginTop: 2,
         height: 400,
+        opacity: 0.4,
+        marginRight: -4
       }}
     >
-      <Typography variant="h6" sx={{ marginBottom: 2, color: "#ffab40" }}>
-        Temperature History
-      </Typography>
       <Line data={chartData} options={chartOptions} />
     </Box>
   );
