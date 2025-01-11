@@ -1,11 +1,10 @@
 import React from "react";
 import { AppBar, Toolbar, Typography } from "@mui/material";
-import MeterDisplay from "./components/MeterDisplay";
+import TemperaturePanel from "./components/TemperaturePanel";
 import BluetoothButton from "./components/BluetoothButton";
+import TemperatureHistoryChart from "./components/TemperatureHistoryChart";
 
 function App() {
-  
-
   return (
     <>
       <AppBar position="static" sx={{ backgroundColor: "#1e1e1e" }}>
@@ -16,7 +15,9 @@ function App() {
           <BluetoothButton />
         </Toolbar>
       </AppBar>
-      <MeterDisplay />
+      <TemperaturePanel probeNumber={0} />
+      <TemperaturePanel probeNumber={1} />
+      <TemperatureHistoryChart />
     </>
   );
 }

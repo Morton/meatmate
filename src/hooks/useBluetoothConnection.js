@@ -10,17 +10,13 @@ const useBluetoothConnection = () => {
   const connectToDevice = useCallback(async () => {
     setIsConnecting(true);
     try {
-      // Request the device
       const device = await navigator.bluetooth.requestDevice({
         acceptAllDevices: false,
         filters: [{ name: "PicoTemperature" }],
         optionalServices: ["12345678-1234-5678-1234-56789abcdef0"],
       });
 
-      // Connect to GATT server
       const server = await device.gatt.connect();
-
-      // Get the service
       const _service = await server.getPrimaryService("12345678-1234-5678-1234-56789abcdef0");
       setService(_service);
 
@@ -52,8 +48,12 @@ const useBluetoothConnection = () => {
       temp1Char.startNotifications().then(() => {
         temp1Char.addEventListener("characteristicvaluechanged", (event) => {
           const value = parseFloat(new TextDecoder().decode(event.target.value));
+          const timestamp = new Date().toISOString();
           setCurrentTemperatures((prev) => [value, prev[1]]);
-          setTemperatureHistories((prev) => [[...prev[0], value], prev[1]]);
+          setTemperatureHistories((prev) => [
+            [...prev[0], { value, timestamp }],
+            prev[1],
+          ]);
         });
       });
 
@@ -61,8 +61,12 @@ const useBluetoothConnection = () => {
       temp2Char.startNotifications().then(() => {
         temp2Char.addEventListener("characteristicvaluechanged", (event) => {
           const value = parseFloat(new TextDecoder().decode(event.target.value));
+          const timestamp = new Date().toISOString();
           setCurrentTemperatures((prev) => [prev[0], value]);
-          setTemperatureHistories((prev) => [prev[0], [...prev[1], value]]);
+          setTemperatureHistories((prev) => [
+            prev[0],
+            [...prev[1], { value, timestamp }],
+          ]);
         });
       });
     } catch (error) {
