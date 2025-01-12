@@ -76,10 +76,10 @@ const TemperaturePanel = ({ probeNumber }) => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            padding: 1
+            padding: 2
           }}
         >
-          No connection, click bluetooth button to connect
+          Press bluetooth button to connect
         </Typography>
       )}
     </Box>
