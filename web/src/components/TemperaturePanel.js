@@ -17,6 +17,7 @@ const TemperaturePanel = ({ probeNumber }) => {
   return (
     <Box
       sx={{
+        position: "relative",
         backgroundColor: "#1e1e1e",
         padding: 2,
         borderRadius: 2,
@@ -37,7 +38,7 @@ const TemperaturePanel = ({ probeNumber }) => {
         }}
       >
         <Typography variant="h6" sx={{ marginBottom: 1, color: "#ffab40" }}>
-        {temperature ? `${temperature.toFixed(1)} °C` : "Waiting for reading..."}
+          {temperature ? `${temperature.toFixed(1)} °C` : "-- °C"}
         </Typography>
         <Slider
           orientation="vertical"
@@ -61,6 +62,26 @@ const TemperaturePanel = ({ probeNumber }) => {
         temperatureHistory={history}
         targetTemperature={targetTemperature}
       />
+      {!temperature && (
+        <Typography
+          variant="h6"
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            color: "#ffab40",
+            backgroundColor: "rgba(0, 0, 0, 0.85)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 1
+          }}
+        >
+          No connection, click bluetooth button to connect
+        </Typography>
+      )}
     </Box>
   );
 };
