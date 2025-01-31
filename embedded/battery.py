@@ -16,5 +16,5 @@ def read_battery_voltage():
     battery_voltage = voltage * divider_ratio  # Scale back to battery voltage
     return battery_voltage
 
-def battery_percentage(voltage, min_v=2.0, max_v=3.0):
+def battery_percentage(voltage, min_v=2.0, max_v=2.4):
     return max(0, min(100, ((voltage - min_v) / (max_v - min_v)) * 100))

@@ -12,9 +12,11 @@ from temperature import read_temperature, calibrate_temperature, moving_average
 from logger import log_message
 from led_status import set_led_status
 from calibration import calibration_probe1, calibration_probe2
+from battery import read_battery_voltage, battery_percentage
 
 adc_probe1 = ADC(27)
 adc_probe2 = ADC(28)
+adc_battery = ADC(26)
 #wdt = WDT(timeout=8000)
 
 buffer_size = 5
@@ -29,9 +31,12 @@ def main():
         try:
             adc_value_probe1 = adc_probe1.read_u16()
             adc_value_probe2 = adc_probe2.read_u16()
+            adc_value_battery = adc_battery.read_u16()
 
             raw_temperature1 = read_temperature(adc_value_probe1)
             raw_temperature2 = read_temperature(adc_value_probe2)
+            battery_voltage = read_battery_voltage()
+            battery_percent = battery_percentage(battery_voltage)
 
             calibrated_temperature1 = calibrate_temperature(raw_temperature1, calibration_probe1)
             calibrated_temperature2 = calibrate_temperature(raw_temperature2, calibration_probe2)
@@ -41,8 +46,9 @@ def main():
 
             ble_temp.set_temperature(1, smoothed_temperature1)
             ble_temp.set_temperature(2, smoothed_temperature2)
+            ble_temp.set_battery_level()
 
-            log_message(f"Probe 1: {smoothed_temperature1:.2f} °C, Probe 2: {smoothed_temperature2:.2f} °C")
+            log_message(f"Probe 1: {smoothed_temperature1:.2f} °C, Probe 2: {smoothed_temperature2:.2f} °C, Battery: {battery_voltage:.2f}V ({battery_percent:.1f}%)")
             set_led_status("on")
 
         except Exception as e:
@@ -55,4 +61,3 @@ def main():
 #if __name__ == "__main__":
 #    
 main()
-

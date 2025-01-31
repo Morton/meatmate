@@ -1,7 +1,9 @@
 import bluetooth
 from micropython import const
+import json
 from logger import log_message
 from calibration import save_calibration, calibration_probe1, calibration_probe2, calibration_file
+from battery import read_battery_voltage, battery_percentage
 
 _IRQ_CENTRAL_CONNECT = const(1)
 _IRQ_CENTRAL_DISCONNECT = const(2)
@@ -12,6 +14,7 @@ TEMP1_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef1")
 TEMP2_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef2")
 CALIB1_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef3")
 CALIB2_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef4")
+BATTERY_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef5")
 
 SERVICE = (
     SERVICE_UUID,
@@ -20,6 +23,7 @@ SERVICE = (
         (TEMP2_UUID, bluetooth.FLAG_READ | bluetooth.FLAG_NOTIFY),
         (CALIB1_UUID, bluetooth.FLAG_READ | bluetooth.FLAG_WRITE),
         (CALIB2_UUID, bluetooth.FLAG_READ | bluetooth.FLAG_WRITE),
+        (BATTERY_UUID, bluetooth.FLAG_READ | bluetooth.FLAG_NOTIFY),
     ),
 )
 
@@ -29,7 +33,7 @@ class BLETemperature:
         self._ble.active(True)
         self._ble.irq(self._irq)
         ((self._handle_temp1, self._handle_temp2,
-          self._handle_calib1, self._handle_calib2),) = self._ble.gatts_register_services((SERVICE,))
+          self._handle_calib1, self._handle_calib2, self._handle_battery),) = self._ble.gatts_register_services((SERVICE,))
         self._connections = set()
         self._advertise()
 
@@ -69,6 +73,14 @@ class BLETemperature:
             self._ble.gatts_write(self._handle_temp2, str(value).encode())
             for conn_handle in self._connections:
                 self._ble.gatts_notify(conn_handle, self._handle_temp2)
+
+    def set_battery_level(self):
+        voltage = read_battery_voltage()
+        percentage = battery_percentage(voltage)
+        battery_data = f"{voltage:.2f}V ({percentage:.1f}%)"
+        self._ble.gatts_write(self._handle_battery, battery_data.encode())
+        for conn_handle in self._connections:
+            self._ble.gatts_notify(conn_handle, self._handle_battery)
 
     def _write_calibration(self, probe, data):
         try:
