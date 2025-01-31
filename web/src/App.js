@@ -5,6 +5,7 @@ import TemperaturePanel from "./components/TemperaturePanel";
 import BluetoothButton from "./components/BluetoothButton";
 import TemperatureHistoryChart from "./components/TemperatureHistoryChart";
 import logo from "./logo.webp";
+import BatteryIndicator from "./components/BatteryIndicator";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           Meat mate
         </Typography>
         <BluetoothButton />
+        <BatteryIndicator />
         <IconButton
           color="primary"
           href="https://github.com/Morton/meatmate"

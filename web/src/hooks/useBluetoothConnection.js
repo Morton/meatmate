@@ -5,6 +5,8 @@ const useBluetoothConnection = () => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [currentTemperatures, setCurrentTemperatures] = useState([null, null]);
   const [temperatureHistories, setTemperatureHistories] = useState([[], []]);
+  const [batteryLevel, setBatteryLevel] = useState(null);
+  const [batteryText, setBatteryText] = useState(null);
   const [service, setService] = useState(null);
 
   const connectToDevice = useCallback(async () => {
@@ -43,6 +45,7 @@ const useBluetoothConnection = () => {
     try {
       const temp1Char = await service.getCharacteristic("12345678-1234-5678-1234-56789abcdef1");
       const temp2Char = await service.getCharacteristic("12345678-1234-5678-1234-56789abcdef2");
+      const batteryChar = await service.getCharacteristic("12345678-1234-5678-1234-56789abcdef5");
 
       // Subscribe to temperature 1
       temp1Char.startNotifications().then(() => {
@@ -69,8 +72,17 @@ const useBluetoothConnection = () => {
           ]);
         });
       });
+
+      // Subscribe to battery level
+      batteryChar.startNotifications().then(() => {
+        batteryChar.addEventListener("characteristicvaluechanged", (event) => {
+          const value = new TextDecoder().decode(event.target.value);
+          setBatteryText(value);
+          setBatteryLevel(/.*\(([0-9.]+)%\)/.exec(value)?.[1]);
+        });
+      });
     } catch (error) {
-      console.error("Error subscribing to temperature: ", error);
+      console.error("Error subscribing to characteristics: ", error);
     }
   }, [service]);
 
@@ -85,6 +97,8 @@ const useBluetoothConnection = () => {
     isConnecting,
     currentTemperatures,
     temperatureHistories,
+    batteryLevel,
+    batteryText,
     connectToDevice,
     disconnectFromDevice,
   };
